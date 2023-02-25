@@ -1,0 +1,5 @@
+GET http://localhost:3001/players/
+### 
+POST http://localhost:3001/players/ 
+###
+GET http://localhost:3001/players/1/
