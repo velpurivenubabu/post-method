@@ -13,7 +13,7 @@ const initializeDBAndServer = async () => {
       driver: sqlite3.Database,
     });
 
-    app.listen(3001, () => {
+    app.listen(3002, () => {
       console.log("Server is running at http://localhost:3000");
     });
   } catch (e) {
@@ -70,15 +70,38 @@ app.post("/players/", async (request, response) => {
   const player_details = request.body;
   const { playerName, jerseyNumber, role } = player_details;
   const add_player = `
-  INSERT INTO 
-  cricket_team (player_name,jersey_number,role)
-  '${playerName}',
-   ${jerseyNumber},
-    '${role}'
-
-);`;
+  INSERT INTO
+    cricket_team (player_name, jersey_number, role)
+  VALUES
+    ('${playerName}', ${jerseyNumber}, '${role}');`;
   const dbResponse = await db.run(add_player);
   const playerId = dbResponse.lastID;
   response.send("Player Added to team");
+});
+app.put("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const playerDetails = request.body;
+  const { playerName, jerseyNumber, role } = playerDetails;
+  const update = `
+  UPDATE
+  cricket_team
+  SET 
+  player_name  = '${playerName}',
+  jersey_number = ${jerseyNumber},
+  role = '${role}'
+  WHERE 
+  player_id = ${playerId};`;
+  await db.run(update);
+  respond.send("Player Added to Team");
+});
+app.delete("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const dell = `
+  DELETE FROM
+   cricket_team
+   WHERE
+   player_id =${playerId};`;
+  await db.run(dell);
+  response.send("Player Removed");
 });
 module.exports = app;
